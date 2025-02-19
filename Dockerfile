@@ -6,6 +6,11 @@ ENV PYTHONUNBUFFERED 1
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 
+# # Create the home directory and set permissions
+# RUN mkdir -p /home/django-user && \
+#     adduser -D -h /home/django-user django-user && \
+#     chown -R django-user:django-user /home/django-user
+
 COPY ./app /app
 WORKDIR /app
 EXPOSE 8000
