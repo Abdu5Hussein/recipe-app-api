@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from core import models
+from unittest.mock import patch
 
 def create_user(email='user@example.com',password='testpass123'):
     """ create and return new user"""
@@ -54,3 +55,20 @@ class ModelTests(TestCase):
             name='test tag',
             )
         self.assertEqual(str(tag), tag.name)
+
+    def test_create_ingredient(self):
+        """test creating a new ingredient"""
+        ingredient = models.Ingredient.objects.create(
+            user=create_user(),
+            name='test ingredient',
+            )
+        self.assertEqual(str(ingredient), ingredient.name)
+
+    @patch('core.models.uuid.uuid4')
+    def test_recipe_file_name_uuid(self, mock_uuid):
+        """Test genetaing image path."""
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+        file_path = models.recipe_image_file_path(None,'example.jpg')
+
+        self.assertEqual(file_path,f'uploads/recipe/{uuid}.jpg')

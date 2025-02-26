@@ -11,6 +11,15 @@ from django.contrib.auth.models import (
 
 from django.conf import settings
 
+import uuid
+import os
+
+def recipe_image_file_path(instance, file_name):
+    """generate file path for new recipe image. """
+    ext = os.path.splitext(file_name)[1]
+    file_name = f'{uuid.uuid4()}{ext}'
+
+    return os.path.join('uploads','recipe',file_name)
 
 class UserManager(BaseUserManager):
     """manager for users."""
@@ -56,6 +65,8 @@ class Recipe(models.Model):
     link = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
     tags = models.ManyToManyField('Tag')
+    ingredients = models.ManyToManyField('Ingredient')
+    image = models.ImageField(null=True,upload_to=recipe_image_file_path)
 
     def __str__(self):
         return self.title
@@ -68,3 +79,12 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
+class Ingredient(models.Model):
+    """Ingredients model"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
